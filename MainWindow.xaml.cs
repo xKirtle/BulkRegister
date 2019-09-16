@@ -5,6 +5,8 @@ using CefSharp;
 using CefSharp.Wpf;
 using WindowsInput;
 using System.Collections.Generic;
+using System.Windows.Controls;
+using System.Collections;
 
 namespace BulkRegister
 {
@@ -13,18 +15,10 @@ namespace BulkRegister
     /// </summary>
     /// 
 
-    public class Accounts
-    {
-        public string Name { get; set; }
-        public string Password { get; set; }
-    }
-
     public partial class MainWindow : Window
     {
         InputSimulator inp = new InputSimulator();
         ChromiumWebBrowser chrome = new ChromiumWebBrowser();
-
-        List<Accounts> Account = new List<Accounts>() { };
 
         public MainWindow()
         {
@@ -33,13 +27,12 @@ namespace BulkRegister
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //comboBox.ItemsSource = Account;
-            //listBox.ItemsSource = Account;
-            foreach (Accounts c in Account)
-            {
-                comboBox.Items.Add(Account);
-                listBox.Items.Add(Account);
-            }
+            //Loads settings
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            //Saves settings
         }
 
         private void Generate_Click(object sender, RoutedEventArgs e)
@@ -70,11 +63,20 @@ namespace BulkRegister
 
             //Couldn't solve this with DOM properties, yet
 
-            Account.Add(new Accounts() { Name = Name.Text, Password = Password.Text });
-
-            for (int i = 0; i < 11; i++)
+            int Count = listBox.Items.Count;
+            if (Count >= 1)
             {
-                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB); //Leaves the input at the username
+                for (int i = 0; i < 12; i++)
+                {
+                    inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB); //Leaves the input at the username
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 11; i++)
+                {
+                    inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB); //Leaves the input at the username
+                }
             }
 
             //Ciruclates through all of the other fields
@@ -93,11 +95,30 @@ namespace BulkRegister
 
         private void Save_Click(object sender, RoutedEventArgs e) //Saving all the accounts details that were generated
         {
-            Account.Add(new Accounts() { Name = Name.Text, Password = Password.Text }); //Not quite working
+            //Create a new item (object) and add it to our list
 
-            //Can't read the values on the list since they show blank, yet a new index is generated
-            comboBox.Items.Add(Name.Text);
-            listBox.Items.Add(Password.Text);
+            ComboBoxItem itm = new ComboBoxItem();
+            itm.Content = Password.Text;
+            comboBox.Items.Add(itm);
+
+            ListBoxItem itm2 = new ListBoxItem();
+            itm2.Content = Name.Text;
+            listBox.Items.Add(itm2);
+        }
+
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //We get the listbox index and set the email to blank
+            int Index = listBox.SelectedIndex;
+            Email.Text = "";
+            //Fill the Name textbox with the listbox Name that was selected
+            string name = listBox.SelectedItem.ToString();
+            string nam = name.Replace("System.Windows.Controls.ListBoxItem: ", "");
+            Name.Text = nam;
+            //And get the password from our combobox to the Password textbox
+            string password = comboBox.Items[Index].ToString();
+            string passwor = password.Replace("System.Windows.Controls.ComboBoxItem: ", "");
+            Password.Text = passwor;
         }
     }
 }

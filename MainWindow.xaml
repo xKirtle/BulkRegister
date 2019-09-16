@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:cefsharpwpf="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         mc:Ignorable="d"
-        Title="BulkRegister" Height="400" Width="700" Loaded="Window_Loaded">
+        Title="BulkRegister" Height="400" Width="700" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="346*"/>
@@ -40,9 +40,9 @@
             </StackPanel>
         </StackPanel>
         <StackPanel Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="1" VerticalAlignment="Center">
-            <ComboBox Height="24" Width="200" Margin="15,5,15,8" x:Name="comboBox" DisplayMemberPath="Name"
+            <ComboBox Height="24" Width="200" Margin="15,5,15,8" x:Name="comboBox" DisplayMemberPath="Password"
                       SelectedIndex="-1" Foreground="Black"/>
-            <ListBox Height="130" Width="200" x:Name="listBox" DisplayMemberPath="Password" Margin="15,4,15,15" />
+            <ListBox Height="130" Width="200" x:Name="listBox" DisplayMemberPath="Name" Margin="15,4,15,15" SelectionChanged="ListBox_SelectionChanged"/>
         </StackPanel>
         <StackPanel Grid.Column="2" Grid.Row="0">
             <Button Content="Save" Margin="5,10,5,2.5" Width="80" Height="26" Click="Save_Click"/>

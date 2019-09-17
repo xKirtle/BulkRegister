@@ -7,6 +7,7 @@ using WindowsInput;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Collections;
+using System.Linq;
 
 namespace BulkRegister
 {
@@ -18,7 +19,6 @@ namespace BulkRegister
     public partial class MainWindow : Window
     {
         InputSimulator inp = new InputSimulator();
-        ChromiumWebBrowser chrome = new ChromiumWebBrowser();
 
         public MainWindow()
         {
@@ -62,35 +62,36 @@ namespace BulkRegister
             //chrome.GetMainFrame().ExecuteJavaScriptAsync(script);
 
             //Couldn't solve this with DOM properties, yet
-
-            int Count = listBox.Items.Count;
-            if (Count >= 1)
+            if (Name.Text != "" && Email.Text != "" && Password.Text != "") //Preventing exceptions that would crash the program
             {
-                for (int i = 0; i < 12; i++)
+                if (listBox.Items.Count >= 1)
                 {
-                    inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB); //Leaves the input at the username
+                    for (int i = 0; i < 13; i++)
+                    {
+                        inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB); //Leaves the input at the username
+                    }
                 }
-            }
-            else
-            {
-                for (int i = 0; i < 11; i++)
+                else
                 {
-                    inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB); //Leaves the input at the username
+                    for (int i = 0; i < 12; i++)
+                    {
+                        inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB); //Leaves the input at the username
+                    }
                 }
-            }
 
-            //Ciruclates through all of the other fields
-            inp.Keyboard.TextEntry(Name.Text);
-            inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
-            inp.Keyboard.TextEntry(Email.Text);
-            inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
-            inp.Keyboard.TextEntry(Password.Text);
-            inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
-            inp.Keyboard.TextEntry(Password.Text);
-            inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
-            inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.SPACE);
-            inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
-            inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.SPACE); //Registers 
+                //Ciruclates through all of the other fields
+                inp.Keyboard.TextEntry(Name.Text);
+                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
+                inp.Keyboard.TextEntry(Email.Text);
+                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
+                inp.Keyboard.TextEntry(Password.Text);
+                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
+                inp.Keyboard.TextEntry(Password.Text);
+                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
+                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.SPACE);
+                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
+                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.SPACE); //Registers 
+            }
         }
 
         private void Save_Click(object sender, RoutedEventArgs e) //Saving all the accounts details that were generated
@@ -119,6 +120,21 @@ namespace BulkRegister
             string password = comboBox.Items[Index].ToString();
             string passwor = password.Replace("System.Windows.Controls.ComboBoxItem: ", "");
             Password.Text = passwor;
+        }
+
+        private void Login_Click(object sender, RoutedEventArgs e) //chrome.Address is returning an empty string. This whole method is not working as intended
+        {
+            //if (chrome.Address == "https://hybbe.top/registro")
+                //return;
+
+            //else if (chrome.Address == "https://hybbe.top/principal") //Checks if the user is logged in before joining the client
+            //{
+                for (int i = 0; i < 11; i++)
+                {
+                    inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB); //Leaves the input at Client Button
+                }
+                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.SPACE); //Joins the Client
+            //}
         }
     }
 }

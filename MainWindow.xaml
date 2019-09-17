@@ -45,7 +45,8 @@
             <ListBox Height="130" Width="200" x:Name="listBox" DisplayMemberPath="Name" Margin="15,4,15,15" SelectionChanged="ListBox_SelectionChanged"/>
         </StackPanel>
         <StackPanel Grid.Column="2" Grid.Row="0">
-            <Button Content="Save" Margin="5,10,5,2.5" Width="80" Height="26" Click="Save_Click"/>
+            <Button Content="Save" Margin="5,7,5,2.5" Width="80" Height="26" Click="Save_Click"/>
+            <Button Content="Login" Margin="5,7,5,2.5" Width="80" Height="26" Click="Login_Click"></Button>
         </StackPanel>
     </Grid>
 </Window>

@@ -22,5 +22,38 @@ namespace BulkRegister {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.ArrayList list_Name {
+            get {
+                return ((global::System.Collections.ArrayList)(this["list_Name"]));
+            }
+            set {
+                this["list_Name"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.ArrayList list_Password {
+            get {
+                return ((global::System.Collections.ArrayList)(this["list_Password"]));
+            }
+            set {
+                this["list_Password"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.ArrayList list_Email {
+            get {
+                return ((global::System.Collections.ArrayList)(this["list_Email"]));
+            }
+            set {
+                this["list_Email"] = value;
+            }
+        }
     }
 }

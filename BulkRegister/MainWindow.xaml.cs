@@ -1,17 +1,18 @@
 ﻿using System.Windows;
 using Newtonsoft.Json.Linq;
 using System.Net;
-using WindowsInput;
 using System.Windows.Controls;
 using System.Collections;
 using System;
 using System.Diagnostics;
+using CefSharp;
+//using WindowsInput;
 
 namespace BulkRegister
 {
     public partial class MainWindow : Window
     {
-        InputSimulator inp = new InputSimulator();
+        //InputSimulator inp = new InputSimulator();
         ArrayList NameList = new ArrayList();
         ArrayList PasswordList = new ArrayList();
         ArrayList EmailList = new ArrayList();
@@ -104,75 +105,61 @@ namespace BulkRegister
 
         private void Register_Click(object sender, RoutedEventArgs e)
         {
-            //string script = "document.getElementById('username')[0].value = '" + Name.Text + "';";
-            //chrome.ExecuteScriptAsync(script);
-            //chrome.GetMainFrame().ExecuteJavaScriptAsync(script);
-
             //Couldn't solve this with DOM properties, yet
-            if (Name.Text != "" && Email.Text != "" && Password.Password != "") //Preventing exceptions that would crash the program
+            if (Name.Text != "" && Email.Text != "" && Password.Password != "") //Preventing empty fields
             {
-                if (listBoxName.Items.Count >= 1)
-                {
-                    for (int i = 0; i < 18; i++)
-                    {
-                        inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB); //Leaves the input at the username
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < 17; i++)
-                    {
-                        inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB); //Leaves the input at the username
-                    }
-                }
-
-                //Ciruclates through all of the other fields
-                inp.Keyboard.TextEntry(Name.Text);
-                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
-                inp.Keyboard.TextEntry(Email.Text);
-                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
+                //Inputs the Name at the Register username field
+                string scriptName = "document.getElementById('username').value = '" + Name.Text + "';";
+                Browser.ExecuteScriptAsync(scriptName);
+                //Inputs the Email at the Register email field
+                string scriptEmail = "document.getElementById('email-address').value = '" + Email.Text + "';";
+                Browser.ExecuteScriptAsync(scriptEmail);
+                //Checks which password box is active and prints it on the register field
                 if (CheckBoxPassword.IsChecked == true)
                 {
-                    inp.Keyboard.TextEntry(TextBoxPassword.Text);
+                    string scriptPassword = "document.getElementById('password_new').value = '" + TextBoxPassword.Text + "';";
+                    Browser.ExecuteScriptAsync(scriptPassword);
+                    string scriptPassword2 = "document.getElementById('password_new_repeated').value = '" + TextBoxPassword.Text + "';";
+                    Browser.ExecuteScriptAsync(scriptPassword2);
                 }
                 else
                 {
-                    inp.Keyboard.TextEntry(Password.Password);
+                    string script_Password = "document.getElementById('password_new').value = '" + Password.Password + "';";
+                    Browser.ExecuteScriptAsync(script_Password);
+                    string script_Password2 = "document.getElementById('password_new_repeated').value = '" + Password.Password + "';";
+                    Browser.ExecuteScriptAsync(script_Password2);
                 }
-                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
-                if (CheckBoxPassword.IsChecked == true)
-                {
-                    inp.Keyboard.TextEntry(TextBoxPassword.Text);
-                }
-                else
-                {
-                    inp.Keyboard.TextEntry(Password.Password);
-                }
-                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
-                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.SPACE);
-                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
-                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.SPACE); //Registers 
+                //Selects the male gender (Lazy, I know)
+                string scriptGender = "document.getElementById('masculino').checked = true;";
+                Browser.ExecuteScriptAsync(scriptGender);
+                //Registers
+                string scriptRegister = "document.getElementById('botao_registrar_final').click();";
+                Browser.ExecuteScriptAsync(scriptRegister);
             }
         }
 
         private void Login_Click(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < 14; i++)
+            if (Name.Text != "" && Email.Text != "" && Password.Password != "") //Preventing empty fields
             {
-                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB); //Leaves the input at the username
+                //Inputs the name
+                string scriptName = "document.getElementById('emailorusername').value = '" + Name.Text + "';";
+                Browser.ExecuteScriptAsync(scriptName);
+                //Inputs the password
+                if (CheckBoxPassword.IsChecked == true)
+                {
+                    string scriptPassword = "document.getElementsByName('password')[0].value = '" + TextBoxPassword.Text + "';";
+                    Browser.ExecuteScriptAsync(scriptPassword);
+                }
+                else
+                {
+                    string scriptPassword2 = "document.getElementsByName('password')[0].value = '" + Password.Password + "';";
+                    Browser.ExecuteScriptAsync(scriptPassword2);
+                }
+                //Login
+                string scriptLogin = "document.getElementById('botao_login').click();";
+                Browser.ExecuteScriptAsync(scriptLogin);
             }
-            inp.Keyboard.TextEntry(Name.Text);
-            inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
-            if (CheckBoxPassword.IsChecked == true)
-            {
-                inp.Keyboard.TextEntry(TextBoxPassword.Text);
-            }
-            else
-            {
-                inp.Keyboard.TextEntry(Password.Password);
-            }
-            inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
-            inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.SPACE); //Logins
         }
 
         private void Password_Click(object sender, RoutedEventArgs e)
@@ -241,7 +228,7 @@ namespace BulkRegister
         {
             //We get the listbox index
             int Index = listBoxName.SelectedIndex;
-            if (listBoxName.SelectedIndex >= 0)
+            if (listBoxName.SelectedIndex >= 0) //SelectedIndex needs to be >= 0 or else whenever we remove an item from the list it will throw an error
             {
                 //Fill the Name textbox with the listbox Name that was selected
                 string name = listBoxName.SelectedItem.ToString();
@@ -256,7 +243,7 @@ namespace BulkRegister
                 //And, finally, the password
                 string password = listBoxPassword.Items[Index].ToString();
                 string passwor = password.Replace("System.Windows.Controls.ListBoxItem: ", "");
-                if (CheckBoxPassword.IsChecked == true) //SelectedIndex needs to be >= 0 or else whenever we remove an item from the list it will throw an error
+                if (CheckBoxPassword.IsChecked == true)
                 {
                     TextBoxPassword.Text = passwor;   
                 }
@@ -274,11 +261,8 @@ namespace BulkRegister
 
             else if (Browser.Address == "https://hybbe.top/principal") //Checks if the user is logged in before joining the client
             {
-                for (int i = 0; i < 18; i++)
-                {
-                    inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB); //Leaves the input at Client Button
-                }
-                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.SPACE); //Joins the Client
+                string scriptJoinClient = "document.getElementsByName('login')[1].click();";
+                Browser.ExecuteScriptAsync(scriptJoinClient); //Joins the 60fps Client
             }
         }
 
@@ -290,6 +274,7 @@ namespace BulkRegister
         private void Mute_Click(object sender, RoutedEventArgs e)
         {
             //Game has a built in radio system. I'll try to mute my application sound with this button
+            MessageBox.Show(Browser.Address);
         }
 
         private void Restart_Click(object sender, RoutedEventArgs e)

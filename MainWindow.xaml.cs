@@ -4,13 +4,11 @@ using System.Net;
 using WindowsInput;
 using System.Windows.Controls;
 using System.Collections;
+using System;
+using System.Diagnostics;
 
 namespace BulkRegister
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    /// 
     public partial class MainWindow : Window
     {
         InputSimulator inp = new InputSimulator();
@@ -92,7 +90,15 @@ namespace BulkRegister
                 //Adding it to our text boxes
                 Name.Text = name;
                 Email.Text = email_u + "@" + email_d;
-                Password.Text = password;
+
+                if (CheckBoxPassword.IsChecked == true)
+                {
+                    TextBoxPassword.Text = password;
+                }
+                else
+                {
+                    Password.Password = password;
+                }
             }
         }
 
@@ -103,18 +109,18 @@ namespace BulkRegister
             //chrome.GetMainFrame().ExecuteJavaScriptAsync(script);
 
             //Couldn't solve this with DOM properties, yet
-            if (Name.Text != "" && Email.Text != "" && Password.Text != "") //Preventing exceptions that would crash the program
+            if (Name.Text != "" && Email.Text != "" && Password.Password != "") //Preventing exceptions that would crash the program
             {
                 if (listBoxName.Items.Count >= 1)
                 {
-                    for (int i = 0; i < 13; i++)
+                    for (int i = 0; i < 18; i++)
                     {
                         inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB); //Leaves the input at the username
                     }
                 }
                 else
                 {
-                    for (int i = 0; i < 12; i++)
+                    for (int i = 0; i < 17; i++)
                     {
                         inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB); //Leaves the input at the username
                     }
@@ -125,13 +131,63 @@ namespace BulkRegister
                 inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
                 inp.Keyboard.TextEntry(Email.Text);
                 inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
-                inp.Keyboard.TextEntry(Password.Text);
+                if (CheckBoxPassword.IsChecked == true)
+                {
+                    inp.Keyboard.TextEntry(TextBoxPassword.Text);
+                }
+                else
+                {
+                    inp.Keyboard.TextEntry(Password.Password);
+                }
                 inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
-                inp.Keyboard.TextEntry(Password.Text);
+                if (CheckBoxPassword.IsChecked == true)
+                {
+                    inp.Keyboard.TextEntry(TextBoxPassword.Text);
+                }
+                else
+                {
+                    inp.Keyboard.TextEntry(Password.Password);
+                }
                 inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
                 inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.SPACE);
                 inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
                 inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.SPACE); //Registers 
+            }
+        }
+
+        private void Login_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < 14; i++)
+            {
+                inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB); //Leaves the input at the username
+            }
+            inp.Keyboard.TextEntry(Name.Text);
+            inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
+            if (CheckBoxPassword.IsChecked == true)
+            {
+                inp.Keyboard.TextEntry(TextBoxPassword.Text);
+            }
+            else
+            {
+                inp.Keyboard.TextEntry(Password.Password);
+            }
+            inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
+            inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.SPACE); //Logins
+        }
+
+        private void Password_Click(object sender, RoutedEventArgs e)
+        {
+            if (CheckBoxPassword.IsChecked == true)
+            {
+                Password.Visibility = Visibility.Collapsed;
+                TextBoxPassword.Visibility = Visibility.Visible;
+                TextBoxPassword.Text = Password.Password;
+            }
+            else
+            {
+                Password.Visibility = Visibility.Visible;
+                TextBoxPassword.Visibility = Visibility.Collapsed;
+                Password.Password = TextBoxPassword.Text;
             }
         }
 
@@ -159,7 +215,7 @@ namespace BulkRegister
                     listBoxName.Items.Add(item);
 
                     ListBoxItem item1 = new ListBoxItem();
-                    item1.Content = Password.Text;
+                    item1.Content = Password.Password;
                     listBoxPassword.Items.Add(item1);
 
                     ListBoxItem item2 = new ListBoxItem();
@@ -191,35 +247,65 @@ namespace BulkRegister
                 string name = listBoxName.SelectedItem.ToString();
                 string nam = name.Replace("System.Windows.Controls.ListBoxItem: ", "");
                 Name.Text = nam;
-                //Get the password from our 2nd ListBox to the Password textbox
-                string password = listBoxPassword.Items[Index].ToString();
-                string passwor = password.Replace("System.Windows.Controls.ListBoxItem: ", "");
-                Password.Text = passwor;
-                //And, finally, the email
+
+                //the Email
                 string email = listBoxEmail.Items[Index].ToString();
                 string emai = email.Replace("System.Windows.Controls.ListBoxItem: ", "");
                 Email.Text = emai;
+
+                //And, finally, the password
+                string password = listBoxPassword.Items[Index].ToString();
+                string passwor = password.Replace("System.Windows.Controls.ListBoxItem: ", "");
+                if (CheckBoxPassword.IsChecked == true) //SelectedIndex needs to be >= 0 or else whenever we remove an item from the list it will throw an error
+                {
+                    TextBoxPassword.Text = passwor;   
+                }
+                else if (CheckBoxPassword.IsChecked == false)
+                {
+                    Password.Password = passwor;
+                }
             }
         }
 
-        private void Client_Click(object sender, RoutedEventArgs e) //chrome.Address is returning an empty string. This whole method is not working as intended
+        private void Client_Click(object sender, RoutedEventArgs e)
         {
-            //if (chrome.Address == "https://hybbe.top/registro")
-                //return;
+            if (Browser.Address == "https://hybbe.top/registro")
+                return;
 
-            //else if (chrome.Address == "https://hybbe.top/principal") //Checks if the user is logged in before joining the client
-            //{
-                for (int i = 0; i < 11; i++)
+            else if (Browser.Address == "https://hybbe.top/principal") //Checks if the user is logged in before joining the client
+            {
+                for (int i = 0; i < 18; i++)
                 {
                     inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB); //Leaves the input at Client Button
                 }
                 inp.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.SPACE); //Joins the Client
-            //}
+            }
         }
 
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
             listBoxName.Items.Clear();
+        }
+
+        private void Mute_Click(object sender, RoutedEventArgs e)
+        {
+            //Game has a built in radio system. I'll try to mute my application sound with this button
+        }
+
+        private void Restart_Click(object sender, RoutedEventArgs e)
+        {
+            //Gets the info to start the new process of the running app
+            AppDomainSetup ads = AppDomain.CurrentDomain.SetupInformation;
+            var path = ads.ApplicationBase + "\\" + ads.ApplicationName;
+            //Opens a new process and kills the running (old) one
+            Process.Start(new ProcessStartInfo(path));
+            Process.GetCurrentProcess().Kill();
+        }
+
+        private void Detach_Click(object sender, RoutedEventArgs e)
+        {
+            Browser window = new Browser();
+            window.Show();
         }
     }
 }

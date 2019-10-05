@@ -11,7 +11,7 @@ namespace BulkRegister
     /// </summary>
     public partial class App : Application
     {
-        private Mutex _mutex;
+        /*private Mutex _mutex;
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -47,6 +47,6 @@ namespace BulkRegister
         protected virtual void CloseMutexHandler(object sender, EventArgs e)
         {
             _mutex?.Close();
-        }
+        }*/
     }
 }

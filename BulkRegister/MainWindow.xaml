@@ -51,10 +51,15 @@
                 </StackPanel>
             </StackPanel>
         </StackPanel>
-        <StackPanel Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="1" Grid.RowSpan="2" Margin="0,-25,0,0">
-            <ListBox Height="150" Width="200" x:Name="listBoxName" Margin="15,15,15,15" SelectionChanged="ListBox_SelectionChanged"/>
+        <StackPanel Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="1" Grid.RowSpan="2" Margin="0,-25,0,0" Panel.ZIndex="1">
+            <ListBox Height="140" Width="200" x:Name="listBoxName" Margin="15,15,15,15" SelectionChanged="ListBox_SelectionChanged"/>
             <ListBox Height="10" Width="200" x:Name="listBoxPassword" Visibility="Collapsed"/>
             <ListBox Height="10" Width="200" x:Name="listBoxEmail" Visibility="Collapsed"/>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Grid.Row="2" Margin="23,-2,0,0" Orientation="Horizontal">
+            <Button Content="Create" HorizontalAlignment="Left" Margin="-1,0,5,0" Height="23" Width="48" Click="CreateXAccounts_Click"/>
+            <TextBox Name="numberAccounts" MaxLength="3" PreviewTextInput="TextBox_PreviewTextInput" Height="23" Width="40" Text="0" FontSize="15"/>
+            <Label Content="Account/s" Margin="0,12,10,0"/>
         </StackPanel>
         <StackPanel Grid.Column="2" Grid.Row="0" Margin="0,14,0,0">
             <Button Content="Client" Margin="5,0,5,2.5" Width="80" Height="26" Click="Client_Click"/>
@@ -62,11 +67,15 @@
             <Button Content="Load List" Margin="5,8,5,2.5" Width="80" Height="26" Click="LoadList_Click"/>
             <Button Content="Mute Audio" Margin="5,8,5,2.5" Width="80" Height="26" Click="Mute_Click" />
         </StackPanel>
-        <StackPanel Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" Margin="0,-25,0,0">
+        <StackPanel Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" Margin="0,-25,0,0" Panel.ZIndex="2">
             <Button Content="Save" Margin="5,15,5,2" Width="80" Height="26" Click="Save_Click"/>
             <Button Content="Remove" Margin="5,6.5,5,2" Width="80" Height="26" Click="Remove_Click"/>
             <Button Content="Clear All" Margin="5,6.5,5,2" Width="80" Height="26" Click="Clear_Click"/>
             <Button Content="Restart App" Margin="5,6.5,5,2.5" Width="80" Height="26" Click="Restart_Click"/>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="-25,15,0,0">
+                <CheckBox Name="CheckBoxAutoSave" Margin="0,6,0,0" IsChecked="False" Click="CheckSave_Click"/>
+                <Label Content="Auto Save Register" Margin="0,0,0,0"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

@@ -6,6 +6,11 @@ using System.Collections;
 using System;
 using System.Diagnostics;
 using CefSharp;
+using System.Text.RegularExpressions;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Linq;
+using System.Threading.Tasks;
 //using WindowsInput;
 
 namespace BulkRegister
@@ -84,10 +89,14 @@ namespace BulkRegister
                 //Parsing the data we need from the api
                 var json = client.DownloadString("https://api.namefake.com/portuguese-brazil/random/");
                 JObject o = JObject.Parse(json);
-                var name = (string)o["username"];
+                var nameb = (string)o["username"];
                 var email_u = (string)o["email_u"];
                 var email_d = (string)o["email_d"];
                 var password = (string)o["password"];
+
+                //Removing special characters from the password since they are not accepted
+                string name = Regex.Replace(nameb, @"[^A-Za-z0-9]+", ""); 
+
                 //Adding it to our text boxes
                 Name.Text = name;
                 Email.Text = email_u + "@" + email_d;
@@ -105,8 +114,7 @@ namespace BulkRegister
 
         private void Register_Click(object sender, RoutedEventArgs e)
         {
-            //Couldn't solve this with DOM properties, yet
-            if (Name.Text != "" && Email.Text != "" && Password.Password != "") //Preventing empty fields
+            if (Name.Text != "" && Email.Text != "" && Password.Password != "" && Browser.IsLoaded == true) //Preventing empty fields & crashes
             {
                 //Inputs the Name at the Register username field
                 string scriptName = "document.getElementById('username').value = '" + Name.Text + "';";
@@ -135,12 +143,51 @@ namespace BulkRegister
                 //Registers
                 string scriptRegister = "document.getElementById('botao_registrar_final').click();";
                 Browser.ExecuteScriptAsync(scriptRegister);
+
+                if (CheckBoxAutoSave.IsChecked == true)
+                {
+                    bool found = false;
+                    foreach (var item in listBoxName.Items)
+                    {
+                        string item1 = item.ToString().Replace("System.Windows.Controls.ListBoxItem: ", ""); //Getting the item as a single string without its item type
+                        if (item1.Equals(Name.Text))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) //If it doesn't find any matches on listBoxName
+                    {
+                        //Create a new item (object) and add it to our list
+                        ListBoxItem item = new ListBoxItem();
+                        item.Content = Name.Text;
+                        listBoxName.Items.Add(item);
+
+                        ListBoxItem item1 = new ListBoxItem();
+                        item1.Content = Password.Password;
+                        listBoxPassword.Items.Add(item1);
+
+                        ListBoxItem item2 = new ListBoxItem();
+                        item2.Content = Email.Text;
+                        listBoxEmail.Items.Add(item2);
+
+                        //Saves the accounts info on a temp text file (plain text)
+                        string pathString2 = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\TempAccounts.txt";
+                        using (StreamWriter sw = File.AppendText(pathString2))
+                        {
+                            sw.WriteLine("Name: " + Name.Text);
+                            sw.WriteLine("Email: " + Email.Text);
+                            sw.WriteLine("Password: " + Password.Password + "\n");
+                        }
+                    }
+                }
             }
         }
 
         private void Login_Click(object sender, RoutedEventArgs e)
         {
-            if (Name.Text != "" && Email.Text != "" && Password.Password != "") //Preventing empty fields
+            if (Name.Text != "" && Email.Text != "" && Password.Password != "" && Browser.IsLoaded == true) //Preventing empty fields & crashes
             {
                 //Inputs the name
                 string scriptName = "document.getElementById('emailorusername').value = '" + Name.Text + "';";
@@ -208,6 +255,15 @@ namespace BulkRegister
                     ListBoxItem item2 = new ListBoxItem();
                     item2.Content = Email.Text;
                     listBoxEmail.Items.Add(item2);
+
+                    //Saves the accounts info on a temp text file (plain text)
+                    string pathString2 = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\TempAccounts.txt";
+                    using (StreamWriter sw = File.AppendText(pathString2))
+                    {
+                        sw.WriteLine("Name: " + Name.Text);
+                        sw.WriteLine("Email: " + Email.Text);
+                        sw.WriteLine("Password: " + Password.Password + "\n");
+                    }
                 }
             }
         }
@@ -259,7 +315,7 @@ namespace BulkRegister
             if (Browser.Address == "https://hybbe.top/registro")
                 return;
 
-            else if (Browser.Address == "https://hybbe.top/principal") //Checks if the user is logged in before joining the client
+            else if (Browser.Address == "https://hybbe.top/principal" && Browser.IsLoaded == true) //Checks if the user is logged in before joining the client
             {
                 string scriptJoinClient = "document.getElementsByName('login')[1].click();";
                 Browser.ExecuteScriptAsync(scriptJoinClient); //Joins the 60fps Client
@@ -274,7 +330,6 @@ namespace BulkRegister
         private void Mute_Click(object sender, RoutedEventArgs e)
         {
             //Game has a built in radio system. I'll try to mute my application sound with this button
-            MessageBox.Show(Browser.Address);
         }
 
         private void Restart_Click(object sender, RoutedEventArgs e)
@@ -287,10 +342,88 @@ namespace BulkRegister
             Process.GetCurrentProcess().Kill();
         }
 
+        private void CheckSave_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void Detach_Click(object sender, RoutedEventArgs e)
         {
             Browser window = new Browser();
             window.Show();
+        }
+
+        private void TextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            //Filters out anything that is not defined in the regex
+            string onlyNumeric = @"^([0-9]+(.[0-9]+)?)$";
+            Regex regex = new Regex(onlyNumeric);
+            e.Handled = !regex.IsMatch(e.Text);
+        }
+
+        private void CreateXAccounts_Click(object sender, RoutedEventArgs e)
+        {
+            Int32.TryParse(numberAccounts.Text, out int numberaccts); //Checking if the value makes sense
+            if (numberaccts > 0)
+            {
+                //Creates File with our x number of accounts to be created
+                string pathString = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\TempValue.txt";
+                File.WriteAllText(pathString, numberAccounts.Text);
+
+                File.SetAttributes(pathString, File.GetAttributes(pathString) | FileAttributes.Hidden);
+
+                Process.Start("C:\\Users\\Kirtle\\source\\repos\\BulkRegister\\Demo\\bin\\x86\\Debug\\AccountsGenerator.exe");
+
+
+                string pathString2_t = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\TempTempAccounts.txt";
+
+                bool loop = true;
+                while (loop)
+                {
+                    //Almost a solution but I can't interact with the file because it's being interacted with on the other app
+                    if (File.Exists(pathString2_t) && File.ReadAllLines(pathString2_t).Length >= 3 * numberaccts)
+                    { 
+                        loop = false;
+                        break;
+                    }
+                }
+
+                if (File.Exists(pathString2_t))
+                {
+
+                    foreach (string line in File.ReadLines(pathString2_t).AsParallel().WithDegreeOfParallelism(3))
+                    {
+                        //Don't need to check for duplicates as these were freshly randomized and the file will be deleted after reading these accounts. (The odds are super slim..)
+                        //I can also save each element found in each line into a listbox because I know their indexes will match since the next two lines always contain the info from x Name
+                        if (line.Contains("Name: "))
+                        {
+                            var nameline = line.Replace("Name: ", "");
+
+                            ListBoxItem item = new ListBoxItem();
+                            item.Content = nameline;
+                            listBoxName.Items.Add(item);
+                        }
+                        if (line.Contains("Email: "))
+                        {
+                            var emailline = line.Replace("Email: ", "");
+
+                            ListBoxItem item1 = new ListBoxItem();
+                            item1.Content = emailline;
+                            listBoxEmail.Items.Add(item1);
+                        }
+                        if (line.Contains("Password: "))
+                        {
+                            var passwordline = line.Replace("Password: ", "");
+
+                            ListBoxItem item2 = new ListBoxItem();
+                            item2.Content = passwordline;
+                            listBoxPassword.Items.Add(item2);
+                        }
+                    }
+
+                    File.Delete(pathString2_t);
+                }
+            }
         }
     }
 }

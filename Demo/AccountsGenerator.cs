@@ -16,8 +16,6 @@ namespace AccountsGenerator
             CefSettings settings = new CefSettings();
             Cef.Initialize(settings);
 
-            //GenData(1);
-            //Parses the data from our temp file, converts it into a number and deletes the temp file.
             string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\TempValue.txt";
             string pathCombine = Path.Combine(path, "\\TempValue.txt");
             if (File.Exists(path))
@@ -33,7 +31,6 @@ namespace AccountsGenerator
             else
             {
                 System.Console.WriteLine("Please don't open this application directly");
-                GenData(2);
                 System.Console.ReadKey();
             }
         }
@@ -84,7 +81,8 @@ namespace AccountsGenerator
                     Console.WriteLine("Email: " + email);
                     Console.WriteLine("Password: " + password + "\n");
                     Console.ForegroundColor = ConsoleColor.White;
-
+                    
+                     
                     bool loaded;
                     if (browser.IsLoading)
                     {
@@ -136,6 +134,8 @@ namespace AccountsGenerator
                     browser.Load("https://hybbe.top/sair"); //Logs out of the account
                     Thread.Sleep(200);
                     //browser.Load("https://hybbe.top/registro");
+                    
+                     
 
                     //Saves the accounts info on a temp text file (plain text)
                     string pathString2 = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\TempAccounts.txt";
@@ -158,7 +158,6 @@ namespace AccountsGenerator
                 }
             }
             //End of for loop
-            Console.ReadKey();
         }
     }
 }

@@ -372,57 +372,50 @@ namespace BulkRegister
 
                 File.SetAttributes(pathString, File.GetAttributes(pathString) | FileAttributes.Hidden);
 
-                Process.Start("C:\\Users\\Kirtle\\source\\repos\\BulkRegister\\Demo\\bin\\x86\\Debug\\AccountsGenerator.exe");
+                string appLocation = AppDomain.CurrentDomain.BaseDirectory;
 
+                Process.Start(appLocation + "\\AccountsGenerator.exe"); //location will be on the same dir as the main .exe
+            }
+        }
 
-                string pathString2_t = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\TempTempAccounts.txt";
+        private void Window_Activated(object sender, EventArgs e)
+        //Whenever the window gets focus, it checks for the temptempaccounts file to import any account that has been created
+        {
+            string pathString2_t = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\TempTempAccounts.txt";
 
-                bool loop = true;
-                while (loop)
+            if (File.Exists(pathString2_t))
+            {
+                foreach (string line in File.ReadLines(pathString2_t).AsParallel().WithDegreeOfParallelism(4))
                 {
-                    //Almost a solution but I can't interact with the file because it's being interacted with on the other app
-                    if (File.Exists(pathString2_t) && File.ReadAllLines(pathString2_t).Length >= 3 * numberaccts)
-                    { 
-                        loop = false;
-                        break;
-                    }
-                }
-
-                if (File.Exists(pathString2_t))
-                {
-
-                    foreach (string line in File.ReadLines(pathString2_t).AsParallel().WithDegreeOfParallelism(3))
+                    //Don't need to check for duplicates as these were freshly randomized and the file will be deleted after reading these accounts. (The odds are super slim..)
+                    //I can also save each element found in each line into a listbox because I know their indexes will match since the next two lines always contain the info from x Name
+                    if (line.Contains("Name: "))
                     {
-                        //Don't need to check for duplicates as these were freshly randomized and the file will be deleted after reading these accounts. (The odds are super slim..)
-                        //I can also save each element found in each line into a listbox because I know their indexes will match since the next two lines always contain the info from x Name
-                        if (line.Contains("Name: "))
-                        {
-                            var nameline = line.Replace("Name: ", "");
+                        var nameline = line.Replace("Name: ", "");
 
-                            ListBoxItem item = new ListBoxItem();
-                            item.Content = nameline;
-                            listBoxName.Items.Add(item);
-                        }
-                        if (line.Contains("Email: "))
-                        {
-                            var emailline = line.Replace("Email: ", "");
-
-                            ListBoxItem item1 = new ListBoxItem();
-                            item1.Content = emailline;
-                            listBoxEmail.Items.Add(item1);
-                        }
-                        if (line.Contains("Password: "))
-                        {
-                            var passwordline = line.Replace("Password: ", "");
-
-                            ListBoxItem item2 = new ListBoxItem();
-                            item2.Content = passwordline;
-                            listBoxPassword.Items.Add(item2);
-                        }
+                        ListBoxItem item = new ListBoxItem();
+                        item.Content = nameline;
+                        listBoxName.Items.Add(item);
                     }
+                    if (line.Contains("Email: "))
+                    {
+                        var emailline = line.Replace("Email: ", "");
 
-                    File.Delete(pathString2_t);
+                        ListBoxItem item1 = new ListBoxItem();
+                        item1.Content = emailline;
+                        listBoxEmail.Items.Add(item1);
+                    }
+                    if (line.Contains("Password: "))
+                    {
+                        var passwordline = line.Replace("Password: ", "");
+
+                        ListBoxItem item2 = new ListBoxItem();
+                        item2.Content = passwordline;
+                        listBoxPassword.Items.Add(item2);
+                    }
                 }
+
+                File.Delete(pathString2_t);
             }
         }
     }

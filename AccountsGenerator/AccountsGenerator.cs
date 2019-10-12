@@ -2,6 +2,10 @@
 using System;
 using System.Net;
 using System.IO;
+using CefSharp;
+using CefSharp.OffScreen;
+using System.Threading;
+using System.Text.RegularExpressions;
 
 namespace AccountsGenerator
 {
@@ -9,9 +13,10 @@ namespace AccountsGenerator
     {
         static void Main(string[] args)
         {
-            //Parses the data from our temp file, converts it into a number and deletes the temp file.
+            CefSettings settings = new CefSettings();
+            Cef.Initialize(settings);
+
             string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\TempValue.txt";
-            string pathCombine = Path.Combine(path, "\\TempValue.txt");
             if (File.Exists(path))
             {
                 string pathString = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\TempValue.txt";
@@ -24,8 +29,8 @@ namespace AccountsGenerator
             }
             else
             {
-                Console.WriteLine("Please don't open this application directly");
-                Console.ReadKey();
+                System.Console.WriteLine("Please don't open this application directly");
+                System.Console.ReadKey();
             }
         }
 
@@ -37,19 +42,97 @@ namespace AccountsGenerator
 
                 using (WebClient client = new WebClient())
                 {
+
+                    var browser = new ChromiumWebBrowser("https://hybbe.top/registro");
+
                     //Parsing the data we need from the api
                     var json = client.DownloadString("https://api.namefake.com/portuguese-brazil/random/");
                     JObject o = JObject.Parse(json);
-                    var name = (string)o["username"];
+                    var nameb = (string)o["username"];
                     var email_u = (string)o["email_u"];
                     var email_d = (string)o["email_d"];
                     var password = (string)o["password"];
                     var email = email_u + "@" + email_d;
 
-                    //Prints info on the console
-                    Console.WriteLine("Name: " + name);
+                    bool parsed;
+                    if (nameb != null && password != null && email != null)
+                    {
+                        parsed = true;
+                    }
+                    else
+                    {
+                        parsed = false;
+                    }
+
+                    while (!parsed) //while loop to loop on until everything has been parsed from the API
+                    {
+                        if (nameb != null && password != null && email != null)
+                        {
+                            parsed = true;
+                        }
+                    }
+
+                    //Not really working?
+                    string name = Regex.Replace(nameb, @"[^0-9a-zA-Z]+", ""); //Removing special characters from the password since they are not accepted
+
+                    //Prints info on the console with a green color
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("\nName: " + name);
                     Console.WriteLine("Email: " + email);
                     Console.WriteLine("Password: " + password + "\n");
+                    //Leaves the color of the text black so the http requests/errors don't show since the background is also black
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    
+                     
+                    bool loaded;
+                    if (browser.IsLoading)
+                    {
+                        loaded = false;
+                    }
+                    else
+                    {
+                        loaded = true;
+                    }
+
+                    while (!loaded) //while loop to loop on until the page has finished loading
+                    {
+                        if (!browser.IsLoading)
+                        {
+                            loaded = true;
+                            break;
+                        }
+                    }
+
+                    //Actually registers
+                    string scriptName = "document.getElementById('username').value = '" + name + "';";
+                    browser.ExecuteScriptAsync(scriptName);
+                    Thread.Sleep(50);
+
+                    string scriptEmail = "document.getElementById('email-address').value = '" + email + "';";
+                    browser.ExecuteScriptAsync(scriptEmail);
+                    Thread.Sleep(50);
+
+                    string scriptPassword = "document.getElementById('password_new').value = '" + password + "';";
+                    browser.ExecuteScriptAsync(scriptPassword);
+                    Thread.Sleep(50);
+
+                    string scriptPassword2 = "document.getElementById('password_new_repeated').value = '" + password + "';";
+                    browser.ExecuteScriptAsync(scriptPassword2);
+                    Thread.Sleep(50);
+
+                    string scriptGender = "document.getElementById('masculino').checked = true;";
+                    browser.ExecuteScriptAsync(scriptGender);
+                    Thread.Sleep(50);
+
+                    string scriptRegister = "document.getElementById('botao_registrar_final').click();";
+                    browser.ExecuteScriptAsync(scriptRegister);
+                    Thread.Sleep(200);
+
+                    //Useless? Browser isn't saving anything in Cache
+                    browser.Load("https://hybbe.top/sair"); //Logs out of the account
+                    Thread.Sleep(200);
+                    
+                     
 
                     //Saves the accounts info on a temp text file (plain text)
                     string pathString2 = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\TempAccounts.txt";
@@ -59,8 +142,20 @@ namespace AccountsGenerator
                         sw.WriteLine("Email: " + email);
                         sw.WriteLine("Password: " + password + "\n");
                     }
+                    File.SetAttributes(pathString2, File.GetAttributes(pathString2) | FileAttributes.Hidden);
+
+                    //Path that will load the generated accounts into the listboxes. File will be deleted as soon as they accounts are in the listboxes
+                    string pathString2_t = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\TempTempAccounts.txt";
+                    using (StreamWriter sw = File.AppendText(pathString2_t))
+                    {
+                        sw.WriteLine("Name: " + name);
+                        sw.WriteLine("Email: " + email);
+                        sw.WriteLine("Password: " + password + "\n");
+                    }
+                    File.SetAttributes(pathString2_t, File.GetAttributes(pathString2_t) | FileAttributes.Hidden);
                 }
             }
+            //End of for loop
         }
     }
 }

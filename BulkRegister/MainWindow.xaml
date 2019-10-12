@@ -65,7 +65,7 @@
             <Button Content="Client" Margin="5,0,5,2.5" Width="80" Height="26" Click="Client_Click"/>
             <Button Content="Save List" Margin="5,8,5,2.5" Width="80" Height="26" Click="SaveList_Click"/>
             <Button Content="Load List" Margin="5,8,5,2.5" Width="80" Height="26" Click="LoadList_Click"/>
-            <Button Content="Mute Audio" Margin="5,8,5,2.5" Width="80" Height="26" Click="Mute_Click" />
+            <Button Content="Mute Audio" Margin="5,8,5,2.5" Width="80" Height="26" Click="Mute_Click" Name="Mute"/>
         </StackPanel>
         <StackPanel Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" Margin="0,-25,0,0" Panel.ZIndex="2">
             <Button Content="Save" Margin="5,15,5,2" Width="80" Height="26" Click="Save_Click"/>
@@ -73,7 +73,7 @@
             <Button Content="Clear All" Margin="5,6.5,5,2" Width="80" Height="26" Click="Clear_Click"/>
             <Button Content="Restart App" Margin="5,6.5,5,2.5" Width="80" Height="26" Click="Restart_Click"/>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="-25,15,0,0">
-                <CheckBox Name="CheckBoxAutoSave" Margin="0,6,0,0" IsChecked="False" Click="CheckSave_Click"/>
+                <CheckBox Name="CheckBoxAutoSave" Margin="0,6,0,0" IsChecked="False"/>
                 <Label Content="Auto Save Register" Margin="0,0,0,0"/>
             </StackPanel>
         </StackPanel>

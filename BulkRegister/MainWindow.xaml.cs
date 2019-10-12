@@ -11,13 +11,11 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Linq;
 using System.Threading.Tasks;
-//using WindowsInput;
 
 namespace BulkRegister
 {
     public partial class MainWindow : Window
     {
-        //InputSimulator inp = new InputSimulator();
         ArrayList NameList = new ArrayList();
         ArrayList PasswordList = new ArrayList();
         ArrayList EmailList = new ArrayList();
@@ -327,9 +325,32 @@ namespace BulkRegister
             listBoxName.Items.Clear();
         }
 
+        //Mute App Volume with win api
+        [DllImport("winmm.dll")]
+        private static extern int waveOutSetVolume(IntPtr hwo, uint dwVolume);
+
+        public static void SetVolume(int volume)
+        {
+            int NewVolume = ((ushort.MaxValue / 10) * volume);
+            uint NewVolumeAllChannels = (((uint)NewVolume & 0x0000ffff) | ((uint)NewVolume << 16));
+            waveOutSetVolume(IntPtr.Zero, NewVolumeAllChannels);
+        }
+        bool mute = false;
         private void Mute_Click(object sender, RoutedEventArgs e)
         {
-            //Game has a built in radio system. I'll try to mute my application sound with this button
+            if (mute == false)
+            {
+                SetVolume(0);
+                mute = true;
+                //Adds visual confirmation that the audio is muted
+                this.Title += " (Audio Muted)";
+            }
+            else if (mute == true)
+            {
+                SetVolume(5);
+                mute = false;
+                this.Title = this.Title.Replace(" (Audio Muted)", "");
+            }
         }
 
         private void Restart_Click(object sender, RoutedEventArgs e)
@@ -342,15 +363,12 @@ namespace BulkRegister
             Process.GetCurrentProcess().Kill();
         }
 
-        private void CheckSave_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void Detach_Click(object sender, RoutedEventArgs e)
         {
             Browser window = new Browser();
             window.Show();
+
+            //Still not how I want it to behave
         }
 
         private void TextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
@@ -374,7 +392,7 @@ namespace BulkRegister
 
                 string appLocation = AppDomain.CurrentDomain.BaseDirectory;
 
-                Process.Start(appLocation + "\\AccountsGenerator.exe"); //location will be on the same dir as the main .exe
+                Process.Start(appLocation + "\\AccountsGenerator.exe");
             }
         }
 

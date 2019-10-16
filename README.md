@@ -19,13 +19,14 @@ I used a few libraries in order to accomplish some tasks. Make sure you have all
 * [Fody](https://www.nuget.org/packages/Fody/)  
 * [Costura.Fody](https://www.nuget.org/packages/Costura.Fody/)  
 * [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json/12.0.3-beta2)
+* [Xceed.Products.Wpf.Toolkit.AvalonDock](https://www.nuget.org/packages/Xceed.Products.Wpf.Toolkit.AvalonDock/3.8.19076.18510)
 
 
 ## Functionality 
 
 This application is strictly focused on generating login details and registering those accounts in the server.
 
-![Image](https://i.imgur.com/F1HVCvc.png)  
+![Image](https://i.imgur.com/ZuFJN4X.png)  
 [Quick Demo Video](https://i.imgur.com/0NcMJA0.mp4) (Doesn't cover every single feature)
 
 ## License

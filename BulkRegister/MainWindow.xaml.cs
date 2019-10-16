@@ -1,16 +1,15 @@
-﻿using System.Windows;
+﻿using CefSharp;
 using Newtonsoft.Json.Linq;
-using System.Net;
-using System.Windows.Controls;
-using System.Collections;
 using System;
+using System.Collections;
 using System.Diagnostics;
-using CefSharp;
-using System.Text.RegularExpressions;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Net;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace BulkRegister
 {
@@ -93,7 +92,7 @@ namespace BulkRegister
                 var password = (string)o["password"];
 
                 //Removing special characters from the password since they are not accepted
-                string name = Regex.Replace(nameb, @"[^A-Za-z0-9]+", ""); 
+                string name = Regex.Replace(nameb, @"[^A-Za-z0-9]+", "");
 
                 //Adding it to our text boxes
                 Name.Text = name;
@@ -299,7 +298,7 @@ namespace BulkRegister
                 string passwor = password.Replace("System.Windows.Controls.ListBoxItem: ", "");
                 if (CheckBoxPassword.IsChecked == true)
                 {
-                    TextBoxPassword.Text = passwor;   
+                    TextBoxPassword.Text = passwor;
                 }
                 else if (CheckBoxPassword.IsChecked == false)
                 {
@@ -361,14 +360,6 @@ namespace BulkRegister
             //Opens a new process and kills the running (old) one
             Process.Start(new ProcessStartInfo(path));
             Process.GetCurrentProcess().Kill();
-        }
-
-        private void Detach_Click(object sender, RoutedEventArgs e)
-        {
-            Browser window = new Browser();
-            window.Show();
-
-            //Still not how I want it to behave
         }
 
         private void TextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
@@ -434,6 +425,23 @@ namespace BulkRegister
                 }
 
                 File.Delete(pathString2_t);
+            }
+        }
+
+        private void CanFloat_Click(object sender, RoutedEventArgs e)
+        {
+            if (CanFloat.IsChecked == true)
+            {
+                HybbeDock.CanFloat = true;
+            }
+            else
+            {
+                HybbeDock.CanFloat = false;
+                //Docks the page back to its initial position
+                if (HybbeDock.IsFloating == true)
+                {
+                    HybbeDock.Dock();
+                }
             }
         }
     }

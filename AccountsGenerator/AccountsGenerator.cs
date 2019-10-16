@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Net;
-using System.IO;
-using CefSharp;
+﻿using CefSharp;
 using CefSharp.OffScreen;
-using System.Threading;
+using Newtonsoft.Json.Linq;
+using System;
+using System.IO;
+using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace AccountsGenerator
 {
@@ -82,8 +82,8 @@ namespace AccountsGenerator
                     Console.WriteLine("Password: " + password + "\n");
                     //Leaves the color of the text black so the http requests/errors don't show since the background is also black
                     Console.ForegroundColor = ConsoleColor.Black;
-                    
-                     
+
+
                     bool loaded;
                     if (browser.IsLoading)
                     {
@@ -131,8 +131,8 @@ namespace AccountsGenerator
                     //Useless? Browser isn't saving anything in Cache
                     browser.Load("https://hybbe.top/sair"); //Logs out of the account
                     Thread.Sleep(200);
-                    
-                     
+
+
 
                     //Saves the accounts info on a temp text file (plain text)
                     string pathString2 = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\TempAccounts.txt";

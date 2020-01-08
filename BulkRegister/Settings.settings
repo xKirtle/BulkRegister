@@ -2,13 +2,13 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="BulkRegister" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="list_Name" Type="System.Collections.ArrayList" Scope="User">
+    <Setting Name="list_Name" Type="System.Collections.Generic.List&lt;System.String&gt;" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="list_Password" Type="System.Collections.ArrayList" Scope="User">
+    <Setting Name="list_Password" Type="System.Collections.Generic.List&lt;System.String&gt;" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="list_Email" Type="System.Collections.ArrayList" Scope="User">
+    <Setting Name="list_Email" Type="System.Collections.Generic.List&lt;System.String&gt;" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

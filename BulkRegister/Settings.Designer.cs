@@ -12,7 +12,7 @@ namespace BulkRegister {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.2.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.4.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -25,9 +25,9 @@ namespace BulkRegister {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.ArrayList list_Name {
+        public global::System.Collections.Generic.List<System.String> list_Name {
             get {
-                return ((global::System.Collections.ArrayList)(this["list_Name"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["list_Name"]));
             }
             set {
                 this["list_Name"] = value;
@@ -36,9 +36,9 @@ namespace BulkRegister {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.ArrayList list_Password {
+        public global::System.Collections.Generic.List<System.String> list_Password {
             get {
-                return ((global::System.Collections.ArrayList)(this["list_Password"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["list_Password"]));
             }
             set {
                 this["list_Password"] = value;
@@ -47,9 +47,9 @@ namespace BulkRegister {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.ArrayList list_Email {
+        public global::System.Collections.Generic.List<System.String> list_Email {
             get {
-                return ((global::System.Collections.ArrayList)(this["list_Email"]));
+                return ((global::System.Collections.Generic.List<System.String>)(this["list_Email"]));
             }
             set {
                 this["list_Email"] = value;

@@ -58,6 +58,7 @@ namespace BulkRegister
                 var email = email_u + "@" + email_d;
                 var password = (string)o["password"];
                 var bdate = (string)o["birth_data"];
+                var gender = (string)o["pict"];
 
                 //Creating a list with our DoB
                 string[] dates = bdate.Split('-');
@@ -67,36 +68,109 @@ namespace BulkRegister
                 //YY-MM-DD
                 DateTime date = new DateTime(Int32.Parse(birthDate[0]), Int32.Parse(birthDate[1]), Int32.Parse(birthDate[2]));
 
-                //MessageBox.Show(birthDate[0].ToString() + "/" + birthDate[1].ToString() + "/" + birthDate[2].ToString());
-
                 //Removing special characters from the password since they are not accepted
                 string name = Regex.Replace(nameb, @"[^A-Za-z0-9]+", "");
 
                 //Adding it to our text boxes
                 Name.Text = name;
                 Email.Text = email;
-                Gender.IsChecked = true; //M
+
+                if (gender.Contains("female"))
+                    Gender.IsChecked = false;
+                else
+                    Gender.IsChecked = true;
+
                 DatePicker.SelectedDate = date;
 
                 if (CheckBoxPassword.IsChecked == true)
                     TextBoxPassword.Text = password;
                 else
                     Password.Password = password;
-
-                //var newUser = Account.CreateAccount(name, password, email, true, date);
-                //accounts.Add(newUser);
             }
         }
 
         private void Register_Click(object sender, RoutedEventArgs e)
         {
-            var newUser = Account.CreateAccount(Name.Text, Password.Password, Email.Text, true, DatePicker.DisplayDate);
-            accounts.Add(newUser);
+            if (Browser.Address == "https://www.habblet.in/registration")
+            {
+                if (accounts.Exists(x => x.Username == Name.Text)) //if account was already Saved in the listBox / possible duplicate?
+                {
+                    var acct = accounts.Find(x => x.Username == Name.Text);
+
+                    DialogResult result = System.Windows.Forms.MessageBox.Show("The account " + acct.Username + " has already been saved. Do you wish to proceed?", "Confirmation", MessageBoxButtons.YesNo);
+                    if (result.ToString() == "Yes")
+                    {
+                        Register(acct);
+                    }
+                }
+                else //Account has never been saved locally, proceeds to register
+                {
+                    var newUser = Account.CreateAccount(Name.Text, Password.Password, Email.Text, Gender.IsChecked.Value, DatePicker.DisplayDate); //Stays in memory but it's not added to any list
+
+                    if (CheckBoxAutoSave.IsChecked == true)
+                    {
+                        accounts.Add(newUser);
+                        listBox.Items.Add(newUser);
+                    }
+
+                    Register(newUser);
+                }
+            }
+        }
+
+        private void Register(Account newUser)
+        {
+            //Inputs the Name at the Register username field
+            string scriptName = "document.getElementsByName('username')[1].value = '" + newUser.Username + "';";
+            Browser.ExecuteScriptAsync(scriptName);
+
+            //Inputs the Email at the Register email field
+            string scriptEmail = "document.getElementsByName('email')[0].value = '" + newUser.Email + "';";
+            Browser.ExecuteScriptAsync(scriptEmail);
+
+            //Checks which password box is active and prints it on the register field
+            string scriptPassword = "document.getElementsByName('password')[1].value = '" + newUser.Password + "';";
+            Browser.ExecuteScriptAsync(scriptPassword);
+            string scriptPassword2 = "document.getElementsByName('password_repeat')[0].value = '" + newUser.Password + "';";
+            Browser.ExecuteScriptAsync(scriptPassword2);
+
+            //DoB
+            string scriptDay = "document.getElementsByTagName('ul')[8].children[" + newUser.DoB.Day + "].click();";
+            Browser.ExecuteScriptAsync(scriptDay);
+
+            string scriptMonth = "document.getElementsByTagName('ul')[9].children[" + newUser.DoB.Month + "].click();";
+            Browser.ExecuteScriptAsync(scriptMonth);
+
+            string scriptYear = "document.getElementsByTagName('ul')[10].children[16].click();";
+            Browser.ExecuteScriptAsync(scriptYear);
+
+            //"How did you find us"
+            string scriptRef = "document.getElementsByTagName('ul')[11].children[1].click();";
+            Browser.ExecuteScriptAsync(scriptRef);
+
+            //Gender
+            int boolInt = newUser.Gender ? 0 : 1;
+            string scriptGender = "document.getElementsByTagName('ul')[12].children[" + boolInt + "].click();";
+            Browser.ExecuteScriptAsync(scriptGender);
+
+            //Registers
+            string scriptRegister = "document.getElementById('registration-recaptcha').click();";
+            Browser.ExecuteScriptAsync(scriptRegister);
         }
 
         private void Login_Click(object sender, RoutedEventArgs e)
         {
+            if (Browser.Address.Contains("habblet.in"))
+            {
+                string scriptName = "document.getElementsByName('username')[0].value = 'Kirtle';";
+                Browser.ExecuteScriptAsync(scriptName);
 
+                string scriptPassword = "document.getElementsByName('password')[0].value = 'Lol123';";
+                Browser.ExecuteScriptAsync(scriptPassword);
+
+                string scriptLogin = "document.getElementById('doLogin').click();";
+                Browser.ExecuteScriptAsync(scriptLogin);
+            }
         }
 
         private void Password_Click(object sender, RoutedEventArgs e)
@@ -119,7 +193,7 @@ namespace BulkRegister
         {
             if (!String.IsNullOrWhiteSpace(Name.Text) && !accounts.Exists(x => x.Username == Name.Text))
             {
-                var newUser = Account.CreateAccount(Name.Text, Password.Password, Email.Text, true, DatePicker.DisplayDate);
+                var newUser = Account.CreateAccount(Name.Text, Password.Password, Email.Text, Gender.IsChecked.Value, DatePicker.DisplayDate);
                 accounts.Add(newUser);
 
                 ListBoxItem newItem = new ListBoxItem { Content = newUser };
